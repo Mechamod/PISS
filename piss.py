@@ -1,4 +1,22 @@
 from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+
+class Utility:
+    """
+    Provides helper functions
+    """
+
+    def cut_long_string(string):
+        """
+        If the input string is too long (15 characters or more) it gets
+        shortened and '...' is put infornt of it, indicating that there
+        was more. The returned string has a length of 15.
+        """
+        
+        if len(string) > 15:
+            return "..."+string[-12:]
+        else:
+            return string
 
 class PISS:
     """
@@ -9,10 +27,15 @@ class PISS:
     """
 
     # Variables (Numbers, Strings, Lists)
-    MINIMUM_HEIGHT = 600
-    MINIMUM_WIDTH = 800
-    MAXIMUM_WIDTH = 1920
-    MAXIMUM_HEIGHT = 1080
+    MINIMUM_HEIGHT = 600 # Minimum height, standard value
+    MINIMUM_WIDTH = 800 # minimum width, standard value
+
+    MAXIMUM_HEIGHT = 1080 # Maximum height
+    MAXIMUM_WIDTH = 1920 # Maximum width
+
+    WINDOW_HEIGHT = 600 # Actual window height, initialized with standard value
+    WINDOW_WIDTH = 800 # Actual window width, initialized with standard value
+
     INPUT_PATH = ''
     OUTPUT_PATH = ''
 
@@ -44,12 +67,14 @@ class PISS:
         self.APP = QApplication([])
         self.VIEWER = QWidget(minimumHeight=self.MINIMUM_HEIGHT, minimumWidth=self.MINIMUM_WIDTH, maximumHeight=self.MAXIMUM_HEIGHT, maximumWidth=self.MAXIMUM_WIDTH)
         self.VIEWER.setWindowTitle("Python Image Selection Saver")
-        self.LAYOUT = QVBoxLayout()
+        self.LAYOUT = QGridLayout()
 
         # Decorate window
         ## Labels
         self.create_label_input_path()
         self.create_label_output_path()
+        self.create_image_label()
+        self.update_image_label()
 
         ## Buttons
         self.create_set_input_path_button()
@@ -76,7 +101,7 @@ class PISS:
         self.btn_set_input_path = QPushButton(self.VIEWER)
         self.btn_set_input_path.setText("Select input folder")
         self.btn_set_input_path.clicked.connect(self.set_input_path)
-        self.LAYOUT.addWidget(self.btn_set_input_path)
+        self.LAYOUT.addWidget(self.btn_set_input_path, 1, 9, 1, 1)
 
     def create_set_output_path_button(self):
         """
@@ -88,7 +113,7 @@ class PISS:
         self.btn_set_output_path = QPushButton(self.VIEWER)
         self.btn_set_output_path.setText("Select output folder")
         self.btn_set_output_path.clicked.connect(self.set_output_path)
-        self.LAYOUT.addWidget(self.btn_set_output_path)
+        self.LAYOUT.addWidget(self.btn_set_output_path, 3, 9, 1, 1)
 
     def create_label_input_path(self):
         """
@@ -98,7 +123,7 @@ class PISS:
 
         self.lbl_input_path = QLabel(self.VIEWER)
         self.lbl_input_path.setText("Input-Path: " + self.INPUT_PATH)
-        self.LAYOUT.addWidget(self.lbl_input_path)
+        self.LAYOUT.addWidget(self.lbl_input_path, 0, 9, 1, 1)
 
     def create_label_output_path(self):#
         """
@@ -108,21 +133,31 @@ class PISS:
 
         self.lbl_output_path = QLabel(self.VIEWER)
         self.lbl_output_path.setText("Output-Path: " + self.OUTPUT_PATH)
-        self.LAYOUT.addWidget(self.lbl_output_path)
+        self.LAYOUT.addWidget(self.lbl_output_path, 2, 9, 1, 1)
+
+    def create_image_label(self):
+        self.image_label = QLabel(self.VIEWER)
+        self.LAYOUT.addWidget(self.image_label, 0, 0, 9, 9)
+
+    def update_image_label(self):
+        qpixmap = QPixmap('test.png').scaledToHeight(self.WINDOW_HEIGHT)
+        self.image_label.setPixmap(qpixmap)
 
     def update_label_input_path(self):
         """
         Updates the label of the input path.
         """
 
-        self.lbl_input_path.setText("Input-Path: " + self.INPUT_PATH)
+        longness_checked_input_string = Utility.cut_long_string(self.INPUT_PATH)
+        self.lbl_input_path.setText("Input-Path: " + longness_checked_input_string)
 
     def update_label_output_path(self):
         """
         Updates the label of the output path.
         """
 
-        self.lbl_output_path.setText("Output-Path: " + self.OUTPUT_PATH)
+        longness_checked_output_string = Utility.cut_long_string(self.OUTPUT_PATH)
+        self.lbl_output_path.setText("Output-Path: " + longness_checked_output_string)
 
     def set_input_path(self):
         """
