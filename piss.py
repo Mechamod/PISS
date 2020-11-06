@@ -147,4 +147,4 @@ if __name__ == '__main__':
     print("Start PISS")
     piss = PISS()
     piss.create_main_window()
-    pss.start_app()
+    piss.start_app()
