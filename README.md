@@ -26,7 +26,8 @@ $ python3 piss.py
 
 ### Donations
 
-BTC: 1DixZsj9HdRMCD16co1BbhXfJoaUrEptcE 
+BTC: 1DixZsj9HdRMCD16co1BbhXfJoaUrEptcE
+
 ETH: 0xf5d23ad5b592a6f078ca18aa5eecc55edb1ce532
 
 
