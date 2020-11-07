@@ -33,8 +33,16 @@ class Utility:
         Starts to copy images from the given path list to the output path if
         the index is in the selected list.
         """
-        
+
         print("Start saving!")
+        from shutil import copy2
+        for index in selected_image_indizes:
+            input_path = str(image_path_list[index])
+            print(f"Copy from '{input_path}' to '{output_path}'.")
+            copy2(input_path, output_path)
+
+        return True
+
 
 class PISS_UI(object):
     """
@@ -131,7 +139,8 @@ class PISS_UI(object):
         Starts the saving process
         """
 
-        Utility.start_saving(self.IMAGE_PATH_LIST, self.SELECTED_IMAGE_INDIZES, self.OUTPUT_PATH)
+        if Utility.start_saving(self.IMAGE_PATH_LIST, self.SELECTED_IMAGE_INDIZES, self.OUTPUT_PATH):
+            print("Close Program!")
 
     def create_label_number_selected(self):
         self.lbl_number_selected = QLabel(self.VIEWER)
