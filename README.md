@@ -9,10 +9,12 @@ The main workflow goes as follows:
   - Open the path to the directory with the images you like to browse
   - Define a output directory
   - Navigate with the arrow keys
-  - Press the space button to move the current image to the output
+  - Press the shift button to move the current image to the output
 
 ### Plans
-  - In planning
+  - Beautify the right side panel.
+  - Have an indication if a image is selected or not.
+  - Provide a requirements.txt file.
 
 ### Installation
 
