@@ -1,5 +1,7 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
+from pathlib import Path
+from PyQt5.QtCore import *
 
 class Utility:
     """
@@ -12,13 +14,13 @@ class Utility:
         shortened and '...' is put infornt of it, indicating that there
         was more. The returned string has a length of 15.
         """
-        
+
         if len(string) > 15:
             return "..."+string[-12:]
         else:
             return string
 
-class PISS:
+class PISS_UI(object):
     """
     Python Image Selection Saver is a PyQt GUI based program which lets the user
     load up a collection of images from a folder, providing a preview of the
@@ -39,6 +41,9 @@ class PISS:
     INPUT_PATH = ''
     OUTPUT_PATH = ''
 
+    IMAGE_PATH_LIST = []
+    IMAGE_INDEX = 0
+
     # Components (not neccessary, but good to have a look)
     VIEWER = None
     APP = None
@@ -47,26 +52,26 @@ class PISS:
     btn_set_output_path = None
     lbl_input_path = None
     lbl_output_path = None
+    lbl_index = None
 
     def __init__(self):
         """
         Init the PISS variables needed beforehand
         """
-
         pass
 
-    def create_main_window(self):
+    def setupUI(self, MainWindow):
         """
         Creates the main window.
         First it defines the window and it's properties, then it creates all
         the elements and forms it has to display and finally
-        it adds everything together.
+        it adds everything together in a QGridLayout.
         """
 
         # Define window
-        self.APP = QApplication([])
-        self.VIEWER = QWidget(minimumHeight=self.MINIMUM_HEIGHT, minimumWidth=self.MINIMUM_WIDTH, maximumHeight=self.MAXIMUM_HEIGHT, maximumWidth=self.MAXIMUM_WIDTH)
-        self.VIEWER.setWindowTitle("Python Image Selection Saver")
+        MainWindow.setObjectName("Python Image Selection Saver")
+        self.VIEWER = QWidget(MainWindow)
+        self.setCentralWidget(self.VIEWER)
         self.LAYOUT = QGridLayout()
 
         # Decorate window
@@ -74,7 +79,8 @@ class PISS:
         self.create_label_input_path()
         self.create_label_output_path()
         self.create_image_label()
-        self.update_image_label()
+        self.initialize_image_label()
+        self.create_label_index()
 
         ## Buttons
         self.create_set_input_path_button()
@@ -84,12 +90,14 @@ class PISS:
         self.VIEWER.setLayout(self.LAYOUT)
         self.VIEWER.show()
 
-    def start_app(self):
+    def create_label_index(self):
         """
-        Starts the execution of the application.
+        Creates a label which is going to indicate which index the user is on.
         """
 
-        self.APP.exec_()
+        self.lbl_index = QLabel(self.VIEWER)
+        self.lbl_index.setText(f"Index: {self.IMAGE_INDEX}")
+        self.LAYOUT.addWidget(self.lbl_index, 4, 9, 1, 1)
 
     def create_set_input_path_button(self):
         """
@@ -136,12 +144,32 @@ class PISS:
         self.LAYOUT.addWidget(self.lbl_output_path, 2, 9, 1, 1)
 
     def create_image_label(self):
+        """
+        Creates the image display
+        """
+
         self.image_label = QLabel(self.VIEWER)
         self.LAYOUT.addWidget(self.image_label, 0, 0, 9, 9)
 
-    def update_image_label(self):
-        qpixmap = QPixmap('test.png').scaledToHeight(self.WINDOW_HEIGHT)
+    def initialize_image_label(self):
+        """
+        Initizlaizes the image display with the homescreen
+        """
+
+        qpixmap = QPixmap('Homescreen.png').scaledToHeight(self.WINDOW_HEIGHT)
         self.image_label.setPixmap(qpixmap)
+        self.image_label.setAlignment(Qt.AlignCenter)
+
+    def update_image_label(self):
+        """
+        Updates the image display by the actual index in the path list
+        of images.
+        """
+
+        path = str(self.IMAGE_PATH_LIST[self.IMAGE_INDEX])
+        qpixmap = QPixmap(path).scaledToHeight(self.WINDOW_HEIGHT)
+        self.image_label.setPixmap(qpixmap)
+        self.image_label.setAlignment(Qt.AlignCenter)
 
     def update_label_input_path(self):
         """
@@ -167,6 +195,7 @@ class PISS:
         self.INPUT_PATH = QFileDialog().getExistingDirectory(None, "Select Input Folder")
         self.update_label_input_path()
         print(f"INPUT_PATH set to {self.INPUT_PATH}")
+        self.load_input_images()
 
     def set_output_path(self):
         """
@@ -177,9 +206,41 @@ class PISS:
         self.update_label_output_path()
         print(f"OUTPUT_PATH set to {self.OUTPUT_PATH}")
 
+    def load_input_images(self):
+        """
+        Loads the paths to the images from the input path as a list.
+        """
+
+        # Resets existing List and Index
+        self.IMAGE_PATH_LIST = []
+        self.IMAGE_INDEX = 0
+
+        # Loads paths
+        types = ['jpg', 'jpeg', 'png']
+        for type in types:
+            for path in Path(self.INPUT_PATH).rglob(f"*.{type}"):
+                self.IMAGE_PATH_LIST.append(path)
+
+        # Update image view
+        self.update_image_label()
+
+class MainWindow(QMainWindow, PISS_UI):
+
+    # Starts the window
+    def __init__(self, parent=None):
+        QMainWindow.__init__(self, parent=parent)
+        self.setWindowTitle("Python Image Selection Saver") # Names the window
+        self.setGeometry(0, 0, 500, 300)  # Resizes the window
+        self.setupUI(self)
+
+    # Gets key press events
+    def keyPressEvent(self, e):
+        print("AAAAAAAAA")
+
 # Starts the program!
 if __name__ == '__main__':
     print("Start PISS")
-    piss = PISS()
-    piss.create_main_window()
-    piss.start_app()
+    app = QApplication([])
+    piss_main_window = MainWindow()
+    piss_main_window.show()
+    app.exec_()
