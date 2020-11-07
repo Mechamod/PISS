@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from pathlib import Path
 from PyQt5.QtCore import *
+import sys
 
 class Utility:
     """
@@ -53,8 +54,8 @@ class PISS_UI(object):
     """
 
     # Variables (Numbers, Strings, Lists)
-    MINIMUM_HEIGHT = 600 # Minimum height, standard value
-    MINIMUM_WIDTH = 800 # minimum width, standard value
+    MINIMUM_HEIGHT = 800 # Minimum height, standard value
+    MINIMUM_WIDTH = 1600 # minimum width, standard value
 
     MAXIMUM_HEIGHT = 1080 # Maximum height
     MAXIMUM_WIDTH = 1920 # Maximum width
@@ -123,6 +124,9 @@ class PISS_UI(object):
         self.VIEWER.setLayout(self.LAYOUT)
         self.VIEWER.show()
 
+        # Resize
+        self.resize(self.MINIMUM_WIDTH, self.MINIMUM_HEIGHT)
+
     def create_button_go(self):
         """
         Create the button used to start the saving process.
@@ -140,7 +144,8 @@ class PISS_UI(object):
         """
 
         if Utility.start_saving(self.IMAGE_PATH_LIST, self.SELECTED_IMAGE_INDIZES, self.OUTPUT_PATH):
-            print("Close Program!")
+            print("Copying done!")
+            sys.exit()
 
     def create_label_number_selected(self):
         self.lbl_number_selected = QLabel(self.VIEWER)
