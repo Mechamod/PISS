@@ -28,6 +28,14 @@ class Utility:
         from os import path
         return path.exists(directory_path)
 
+    def start_saving(image_path_list, selected_image_indizes, output_path):
+        """
+        Starts to copy images from the given path list to the output path if
+        the index is in the selected list.
+        """
+        
+        print("Start saving!")
+
 class PISS_UI(object):
     """
     Python Image Selection Saver is a PyQt GUI based program which lets the user
@@ -50,18 +58,23 @@ class PISS_UI(object):
     OUTPUT_PATH = ''
 
     IMAGE_PATH_LIST = ['Homescreen.png']
+    SELECTED_IMAGE_INDIZES = []
     IMAGE_INDEX = 0
 
     # Components (not neccessary, but good to have a look)
     VIEWER = None
     APP = None
     LAYOUT = None
+
     btn_set_input_path = None
     btn_set_output_path = None
+    btn_go = None
+
     lbl_input_path = None
     lbl_output_path = None
     lbl_index = None
     lbl_list_length = None
+    lbl_number_selected = None
 
     def __init__(self):
         """
@@ -91,14 +104,42 @@ class PISS_UI(object):
         self.initialize_image_label()
         self.create_label_index()
         self.create_label_list_length()
+        self.create_label_number_selected()
 
         ## Buttons
         self.create_set_input_path_button()
         self.create_set_output_path_button()
+        self.create_button_go()
 
         # Start app
         self.VIEWER.setLayout(self.LAYOUT)
         self.VIEWER.show()
+
+    def create_button_go(self):
+        """
+        Create the button used to start the saving process.
+        """
+
+        self.btn_go = QPushButton(self.VIEWER)
+        self.btn_go.setText("Save selected")
+        self.btn_go.clicked.connect(self.start_saving)
+        self.btn_go.setFocusPolicy(Qt.NoFocus)
+        self.LAYOUT.addWidget(self.btn_go, 7,9,1,2)
+
+    def start_saving(self):
+        """
+        Starts the saving process
+        """
+
+        Utility.start_saving(self.IMAGE_PATH_LIST, self.SELECTED_IMAGE_INDIZES, self.OUTPUT_PATH)
+
+    def create_label_number_selected(self):
+        self.lbl_number_selected = QLabel(self.VIEWER)
+        self.lbl_number_selected.setText(f"# of selected images: {len(self.SELECTED_IMAGE_INDIZES)}")
+        self.LAYOUT.addWidget(self.lbl_number_selected, 6, 9, 1, 1)
+
+    def update_label_number_selected(self):
+        self.lbl_number_selected.setText(f"# of selected images: {len(self.SELECTED_IMAGE_INDIZES)}")
 
     def create_label_list_length(self):
         """
@@ -226,6 +267,7 @@ class PISS_UI(object):
         self.INPUT_PATH = str(QFileDialog().getExistingDirectory(None, "Select Input Folder"))
         self.update_label_input_path()
         print(f"INPUT_PATH set to {self.INPUT_PATH}")
+        self.btn_set_input_path.setEnabled(False)
         self.load_input_images()
 
     def set_output_path(self):
@@ -234,8 +276,10 @@ class PISS_UI(object):
         """
 
         self.OUTPUT_PATH = str(QFileDialog().getExistingDirectory(None, "Select Output Folder"))
+
         if Utility.path_exists(self.OUTPUT_PATH):
             self.update_label_output_path()
+            self.btn_set_output_path.setEnabled(False)
             print(f"OUTPUT_PATH set to {self.OUTPUT_PATH}")
         else:
             print("Path does not exists!")
@@ -262,10 +306,28 @@ class PISS_UI(object):
         self.update_image_label()
 
     def change_image_index(self, mode):
+        """
+        Increases or decreases the image index.
+        """
+
         if mode == "INCREASE" and self.IMAGE_INDEX < len(self.IMAGE_PATH_LIST)-1:
             self.IMAGE_INDEX+=1
         elif mode == "DECREASE" and self.IMAGE_INDEX > 0:
             self.IMAGE_INDEX-=1
+
+    def shift_image(self):
+        """
+        Adds or removes an image, depending if it is already in the list or not.
+        """
+
+        if self.IMAGE_INDEX in self.SELECTED_IMAGE_INDIZES:
+            print(f"Remove {self.IMAGE_INDEX}")
+            self.SELECTED_IMAGE_INDIZES.remove(self.IMAGE_INDEX)
+        else:
+            print(f"Add {self.IMAGE_INDEX}")
+            self.SELECTED_IMAGE_INDIZES.append(self.IMAGE_INDEX)
+
+        self.update_label_number_selected()
 
 class MainWindow(QMainWindow, PISS_UI):
 
@@ -281,12 +343,7 @@ class MainWindow(QMainWindow, PISS_UI):
         pressed_key = e.key()
 
         if pressed_key == Qt.Key_Shift:
-
-            # Check that an output path has been set uneccessary,
-            # checked when set
-            pass
-
-
+            self.shift_image()
         elif pressed_key == Qt.Key_Left:
             self.change_image_index("DECREASE")
             self.update_image_label()
