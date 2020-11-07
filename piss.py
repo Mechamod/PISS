@@ -10,15 +10,23 @@ class Utility:
 
     def cut_long_string(string):
         """
-        If the input string is too long (15 characters or more) it gets
+        If the input string is too long (20 characters or more) it gets
         shortened and '...' is put infornt of it, indicating that there
-        was more. The returned string has a length of 15.
+        was more. The returned string has a length of 20.
         """
 
-        if len(string) > 15:
-            return "..."+string[-12:]
+        if len(string) >= 20:
+            return "..."+string[-17:]
         else:
             return string
+
+    def path_exists(directory_path):
+        """
+        Checks if the given path exists. True iff yes.
+        """
+
+        from os import path
+        return path.exists(directory_path)
 
 class PISS_UI(object):
     """
@@ -53,6 +61,7 @@ class PISS_UI(object):
     lbl_input_path = None
     lbl_output_path = None
     lbl_index = None
+    lbl_list_length = None
 
     def __init__(self):
         """
@@ -81,6 +90,7 @@ class PISS_UI(object):
         self.create_image_label()
         self.initialize_image_label()
         self.create_label_index()
+        self.create_label_list_length()
 
         ## Buttons
         self.create_set_input_path_button()
@@ -90,17 +100,33 @@ class PISS_UI(object):
         self.VIEWER.setLayout(self.LAYOUT)
         self.VIEWER.show()
 
+    def create_label_list_length(self):
+        """
+        Creates the label which shows the number of images loaded.
+        """
+
+        self.lbl_list_length = QLabel(self.VIEWER)
+        self.lbl_list_length.setText(f"# of images: {len(self.IMAGE_PATH_LIST)}")
+        self.LAYOUT.addWidget(self.lbl_list_length, 5, 9, 1, 1)
+
+    def update_label_list_length(self):
+        """
+        Updates the label which shows the number of images.
+        """
+
+        self.lbl_list_length.setText(f"# of Images: {len(self.IMAGE_PATH_LIST)}")
+
     def create_label_index(self):
         """
         Creates a label which is going to indicate which index the user is on.
         """
 
         self.lbl_index = QLabel(self.VIEWER)
-        self.lbl_index.setText(f"Index: {self.IMAGE_INDEX}")
+        self.lbl_index.setText(f"Actual image number: {self.IMAGE_INDEX+1}")
         self.LAYOUT.addWidget(self.lbl_index, 4, 9, 1, 1)
 
     def update_label_index(self):
-        self.lbl_index.setText(str(self.IMAGE_INDEX))
+        self.lbl_index.setText(f"Actual image number: {self.IMAGE_INDEX+1}")
 
     def create_set_input_path_button(self):
         """
@@ -197,7 +223,7 @@ class PISS_UI(object):
         Opens a dialog form that lets the user choose the input directory.
         """
 
-        self.INPUT_PATH = QFileDialog().getExistingDirectory(None, "Select Input Folder")
+        self.INPUT_PATH = str(QFileDialog().getExistingDirectory(None, "Select Input Folder"))
         self.update_label_input_path()
         print(f"INPUT_PATH set to {self.INPUT_PATH}")
         self.load_input_images()
@@ -207,9 +233,12 @@ class PISS_UI(object):
         Opens a dialog form that lets the user choose the output directory.
         """
 
-        self.OUTPUT_PATH = QFileDialog().getExistingDirectory(None, "Select Output Folder")
-        self.update_label_output_path()
-        print(f"OUTPUT_PATH set to {self.OUTPUT_PATH}")
+        self.OUTPUT_PATH = str(QFileDialog().getExistingDirectory(None, "Select Output Folder"))
+        if Utility.path_exists(self.OUTPUT_PATH):
+            self.update_label_output_path()
+            print(f"OUTPUT_PATH set to {self.OUTPUT_PATH}")
+        else:
+            print("Path does not exists!")
 
     def load_input_images(self):
         """
@@ -226,6 +255,9 @@ class PISS_UI(object):
             for path in Path(self.INPUT_PATH).rglob(f"*.{type}"):
                 self.IMAGE_PATH_LIST.append(path)
 
+        # Update length and its label
+        self.update_label_list_length()
+
         # Update image view
         self.update_image_label()
 
@@ -234,8 +266,6 @@ class PISS_UI(object):
             self.IMAGE_INDEX+=1
         elif mode == "DECREASE" and self.IMAGE_INDEX > 0:
             self.IMAGE_INDEX-=1
-        else:
-            print("Another")
 
 class MainWindow(QMainWindow, PISS_UI):
 
@@ -251,7 +281,12 @@ class MainWindow(QMainWindow, PISS_UI):
         pressed_key = e.key()
 
         if pressed_key == Qt.Key_Shift:
-            print("Shift presse!")
+
+            # Check that an output path has been set uneccessary,
+            # checked when set
+            pass
+
+
         elif pressed_key == Qt.Key_Left:
             self.change_image_index("DECREASE")
             self.update_image_label()
