@@ -109,6 +109,7 @@ class PISS_UI(object):
         self.btn_set_input_path = QPushButton(self.VIEWER)
         self.btn_set_input_path.setText("Select input folder")
         self.btn_set_input_path.clicked.connect(self.set_input_path)
+        self.btn_set_input_path.setFocusPolicy(Qt.NoFocus)
         self.LAYOUT.addWidget(self.btn_set_input_path, 1, 9, 1, 1)
 
     def create_set_output_path_button(self):
@@ -121,6 +122,7 @@ class PISS_UI(object):
         self.btn_set_output_path = QPushButton(self.VIEWER)
         self.btn_set_output_path.setText("Select output folder")
         self.btn_set_output_path.clicked.connect(self.set_output_path)
+        self.btn_set_output_path.setFocusPolicy(Qt.NoFocus)
         self.LAYOUT.addWidget(self.btn_set_output_path, 3, 9, 1, 1)
 
     def create_label_input_path(self):
@@ -235,7 +237,14 @@ class MainWindow(QMainWindow, PISS_UI):
 
     # Gets key press events
     def keyPressEvent(self, e):
-        print("AAAAAAAAA")
+        pressed_key = e.key()
+
+        if pressed_key == Qt.Key_Shift:
+            print("Shift presse!")
+        elif pressed_key == Qt.Key_Left:
+            print("Lower index!")
+        elif pressed_key == Qt.Key_Right:
+            print("Increase index!")
 
 # Starts the program!
 if __name__ == '__main__':
