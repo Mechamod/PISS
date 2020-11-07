@@ -41,7 +41,7 @@ class PISS_UI(object):
     INPUT_PATH = ''
     OUTPUT_PATH = ''
 
-    IMAGE_PATH_LIST = []
+    IMAGE_PATH_LIST = ['Homescreen.png']
     IMAGE_INDEX = 0
 
     # Components (not neccessary, but good to have a look)
@@ -99,6 +99,9 @@ class PISS_UI(object):
         self.lbl_index.setText(f"Index: {self.IMAGE_INDEX}")
         self.LAYOUT.addWidget(self.lbl_index, 4, 9, 1, 1)
 
+    def update_label_index(self):
+        self.lbl_index.setText(str(self.IMAGE_INDEX))
+
     def create_set_input_path_button(self):
         """
         Creates a button which opens a dialog to let the user select the
@@ -135,7 +138,7 @@ class PISS_UI(object):
         self.lbl_input_path.setText("Input-Path: " + self.INPUT_PATH)
         self.LAYOUT.addWidget(self.lbl_input_path, 0, 9, 1, 1)
 
-    def create_label_output_path(self):#
+    def create_label_output_path(self):
         """
         Creates a text label that displays the currently set path of the
         output directory.
@@ -226,13 +229,21 @@ class PISS_UI(object):
         # Update image view
         self.update_image_label()
 
+    def change_image_index(self, mode):
+        if mode == "INCREASE" and self.IMAGE_INDEX < len(self.IMAGE_PATH_LIST)-1:
+            self.IMAGE_INDEX+=1
+        elif mode == "DECREASE" and self.IMAGE_INDEX > 0:
+            self.IMAGE_INDEX-=1
+        else:
+            print("Another")
+
 class MainWindow(QMainWindow, PISS_UI):
 
     # Starts the window
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent=parent)
         self.setWindowTitle("Python Image Selection Saver") # Names the window
-        self.setGeometry(0, 0, 500, 300)  # Resizes the window
+        #self.setGeometry(0, 0, 500, 300)  # Resizes the window
         self.setupUI(self)
 
     # Gets key press events
@@ -242,9 +253,13 @@ class MainWindow(QMainWindow, PISS_UI):
         if pressed_key == Qt.Key_Shift:
             print("Shift presse!")
         elif pressed_key == Qt.Key_Left:
-            print("Lower index!")
+            self.change_image_index("DECREASE")
+            self.update_image_label()
+            self.update_label_index()
         elif pressed_key == Qt.Key_Right:
-            print("Increase index!")
+            self.change_image_index("INCREASE")
+            self.update_image_label()
+            self.update_label_index()
 
 # Starts the program!
 if __name__ == '__main__':
