@@ -127,6 +127,12 @@ class PISS_UI(object):
         # Resize
         self.resize(self.MINIMUM_WIDTH, self.MINIMUM_HEIGHT)
 
+    def check_background(self):
+        if self.IMAGE_INDEX in self.SELECTED_IMAGE_INDIZES:
+            self.setStyleSheet("background-color: lightgray;")
+        else:
+            self.setStyleSheet("background-color: white;")
+
     def create_button_go(self):
         """
         Create the button used to start the saving process.
@@ -235,6 +241,8 @@ class PISS_UI(object):
         """
 
         self.image_label = QLabel(self.VIEWER)
+        self.image_label.setMaximumWidth(1600)
+        self.image_label.setMaximumWidth(1280)
         self.LAYOUT.addWidget(self.image_label, 0, 0, 9, 9)
 
     def initialize_image_label(self):
@@ -360,12 +368,12 @@ class MainWindow(QMainWindow, PISS_UI):
             self.shift_image()
         elif pressed_key == Qt.Key_Left:
             self.change_image_index("DECREASE")
-            self.update_image_label()
-            self.update_label_index()
         elif pressed_key == Qt.Key_Right:
             self.change_image_index("INCREASE")
-            self.update_image_label()
-            self.update_label_index()
+
+        self.update_image_label()
+        self.update_label_index()
+        self.check_background()
 
 # Starts the program!
 if __name__ == '__main__':
