@@ -34,9 +34,6 @@ ETH: 0xf5d23ad5b592a6f078ca18aa5eecc55edb1ce532
 
 
 
-
-This Markdown site was created using [Dillinger]!
-
 [//]: # (These are reference links used in the body)
    [PyQt5]: <https://riverbankcomputing.com/software/pyqt/downloadr>
    [Dillinger]: <https://dillinger.io/>
