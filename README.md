@@ -17,8 +17,8 @@ The main workflow goes as follows:
 
 ### Installation
 
-PISS requires Python3 to run.
-Install the dependencies from the requirements.txt file and run piss.py
+QIS requires Python3 to run.
+Install the dependencies from the requirements.txt file and run qis.py
 
 ```sh
 $ pip3 install -r requirements.txt
