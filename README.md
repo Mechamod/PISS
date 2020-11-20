@@ -1,7 +1,7 @@
-# PISS
-### Python Image Selection Saver
+# QIS
+### Quick Image Selector
 
-Python Image Selection Saver is a program build with [PyQT5] that lets you sort out images you like of a collection in a quick way. It's goal is to save a lot of time when browsing collections of images, like having thousands of images from the smartphone, but dont want to swipe each one in the gallery. 
+QIS is a program build with [PyQT5] that lets you sort out images you like of a collection in a quick way. It's goal is to save a lot of time when browsing collections of images, like having thousands of images from the smartphone, but dont want to swipe each one in the gallery. 
 
 ### Workflow
 The main workflow goes as follows:
@@ -13,7 +13,6 @@ The main workflow goes as follows:
 
 ### Plans
   - Beautify the right side panel.
-  - Have an indication if a image is selected or not.
   - Provide a requirements.txt file.
 
 ### Installation
@@ -23,7 +22,7 @@ Install the dependencies from the requirements.txt file and run piss.py
 
 ```sh
 $ pip3 install -r requirements.txt
-$ python3 piss.py
+$ python3 qis.py
 ```
 
 ### Donations
